@@ -64,6 +64,9 @@
     <Compile Include="Fpk\FpkReference.cs" />
     <Compile Include="Fpk\FpkString.cs" />
     <Compile Include="Fpk\FpkType.cs" />
+    <Compile Include="Gzs\GzsArchiveFooter.cs" />
+    <Compile Include="Gzs\GzsEntry.cs" />
+    <Compile Include="Gzs\GzsFile.cs" />
     <Compile Include="Pftxs\PftxsFile.cs" />
     <Compile Include="Pftxs\PftxsFtexFile.cs" />
     <Compile Include="Pftxs\PftxsFtexsFileEntry.cs" />
@@ -73,6 +76,7 @@
     <Compile Include="Sbp\SbpEntry.cs" />
     <Compile Include="Sbp\SbpFile.cs" />
     <Compile Include="Utility\Compression.cs" />
+    <Compile Include="Utility\Encryption.cs" />
     <Compile Include="Utility\Hashing.cs" />
     <Compile Include="Utility\StructuralEqualityComparer.cs" />
   </ItemGroup>

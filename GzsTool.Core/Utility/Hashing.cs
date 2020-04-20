@@ -160,6 +160,117 @@ namespace GzsTool.Core.Utility
             "xml"
         };
 
+        private static readonly Dictionary<int, string> TypeExtensions = new Dictionary<int, string>
+        {
+            {0, ""},
+            {1, ".xml"},
+            {2, ".json"},
+            {3, ".ese"},
+            {4, ".fxp"},
+            {5, ".fpk"},
+            {6, ".fpkd"},
+            {7, ".fpkl"},
+            {8, ".aib"},
+            {9, ".frig"},
+            {10, ".mtar"},
+            {11, ".gani"},
+            {12, ".evb"},
+            {13, ".evf"},
+            {14, ".ag.evf"},
+            {15, ".cc.evf"},
+            {16, ".fx.evf"},
+            {17, ".sd.evf"},
+            {18, ".vo.evf"},
+            {19, ".fsd"},
+            {20, ".fage"},
+            {21, ".fago"},
+            {22, ".fag"},
+            {23, ".fagx"},
+            {24, ".fagp"},
+            {25, ".frdv"},
+            {26, ".fdmg"},
+            {27, ".des"},
+            {28, ".fdes"},
+            {29, ".aibc"},
+            {30, ".mtl"},
+            {31, ".fsml"},
+            {32, ".fox"},
+            {33, ".fox2"},
+            {34, ".las"},
+            {35, ".fstb"},
+            {36, ".lua"},
+            {37, ".fcnp"},
+            {38, ".fcnpx"},
+            {39, ".sub"},
+            {40, ".fova"},
+            {41, ".lad"},
+            {42, ".lani"},
+            {43, ".vfx"},
+            {44, ".vfxbin"},
+            {45, ".frt"},
+            {46, ".gpfp"},
+            {47, ".gskl"},
+            {48, ".geom"},
+            {49, ".tgt"},
+            {50, ".path"},
+            {51, ".fmdl"},
+            {52, ".ftex"},
+            {53, ".htre"},
+            {54, ".tre2"},
+            {55, ".grxla"},
+            {56, ".grxoc"},
+            {57, ".mog"},
+            {58, ".pftxs"},
+            {59, ".nav2"},
+            {60, ".bnd"},
+            {61, ".parts"},
+            {62, ".phsd"},
+            {63, ".ph"},
+            {64, ".veh"},
+            {65, ".sdf"},
+            {66, ".sad"},
+            {67, ".sim"},
+            {68, ".fclo"},
+            {69, ".clo"},
+            {70, ".lng"},
+            {71, ".uig"},
+            {72, ".uil"},
+            {73, ".uif"},
+            {74, ".uia"},
+            {75, ".fnt"},
+            {76, ".utxl"},
+            {77, ".uigb"},
+            {78, ".vfxdb"},
+            {79, ".rbs"},
+            {80, ".aia"},
+            {81, ".aim"},
+            {82, ".aip"},
+            {83, ".aigc"},
+            {84, ".aig"},
+            {85, ".ait"},
+            {86, ".fsm"},
+            {87, ".obr"},
+            {88, ".obrb"},
+            {89, ".lpsh"},
+            {90, ".sani"},
+            {91, ".rdb"},
+            {92, ".phep"},
+            {93, ".simep"},
+            {94, ".atsh"},
+            {95, ".txt"},
+            {96, ".1.ftexs"},
+            {97, ".2.ftexs"},
+            {98, ".3.ftexs"},
+            {99, ".4.ftexs"},
+            {100, ".5.ftexs"},
+            {101, ".sbp"},
+            {102, ".mas"},
+            {103, ".rdf"},
+            {104, ".wem"},
+            {105, ".lba"},
+            {106, ".uilb"}
+        };
+
         private static readonly Dictionary<ulong, string> ExtensionsMap = FileExtensions.ToDictionary(HashFileExtension);
 
         public const ulong MetaFlag = 0x4000000000000;
@@ -298,6 +409,21 @@ namespace GzsTool.Core.Utility
             return foundFileName;
         }
 
+        internal static bool TryGetFileNameFromHash(ulong hash, int fileExtensionId, out string fileName)
+        {
+            string fileExtension = TypeExtensions[fileExtensionId];
+            ulong hashMasked = hash & 0xFFFFFFFFFFFF;
+
+            bool fileNameFound = HashNameDictionary.TryGetValue(hashMasked, out fileName);
+            if (fileNameFound == false)
+            {
+                fileName = String.Format("{0:x}", hashMasked);
+            }
+
+            fileName = String.Format("{0}{1}", fileName, fileExtension);
+            return fileNameFound;
+        }
+
         [Conditional("DEBUG")]
         private static void DebugAssertHashMatches(bool foundFileName, ulong hash, string fileName)
         {
@@ -316,6 +442,18 @@ namespace GzsTool.Core.Utility
             foreach (var line in File.ReadAllLines(path))
             {
                 ulong hash = HashFileName(line) & 0x3FFFFFFFFFFFF;
+                if (HashNameDictionary.ContainsKey(hash) == false)
+                {
+                    HashNameDictionary.Add(hash, line);
+                }
+            }
+        }
+
+        public static void ReadDictionaryLegacy(string path)
+        {
+            foreach (var line in File.ReadAllLines(path))
+            {
+                ulong hash = HashFileNameLegacy(line);
                 if (HashNameDictionary.ContainsKey(hash) == false)
                 {
                     HashNameDictionary.Add(hash, line);

@@ -9,6 +9,7 @@ using GzsTool.Core.Common.Interfaces;
 using GzsTool.Core.Fpk;
 using GzsTool.Core.Pftxs;
 using GzsTool.Core.Qar;
+using GzsTool.Core.Gzs;
 using GzsTool.Core.Sbp;
 using GzsTool.Core.Utility;
 
@@ -18,7 +19,7 @@ namespace GzsTool
     {
         private static readonly XmlSerializer ArchiveSerializer = new XmlSerializer(
             typeof(ArchiveFile),
-            new[] { typeof(FpkFile), typeof(PftxsFile), typeof(QarFile), typeof(SbpFile) });
+            new[] { typeof(FpkFile), typeof(PftxsFile), typeof(QarFile), typeof(SbpFile), typeof(GzsFile) });
 
         private static void Main(string[] args)
         {
@@ -59,6 +60,9 @@ namespace GzsTool
                     string extension = Path.GetExtension(path);
                     switch (extension)
                     {
+                        case ".g0s":
+                            ReadArchive<GzsFile>(path);
+                            return;
                         case ".dat":
                             QarFile qarFile = ReadArchive<QarFile>(path, outputHashes);
                             if (outputHashes) 
@@ -116,6 +120,7 @@ namespace GzsTool
         private static void ReadDictionaries()
         {
             string executingAssemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            
             const string qarDictionaryName = "qar_dictionary.txt";
             try
             {
@@ -124,6 +129,16 @@ namespace GzsTool
             catch (Exception e)
             {
                 Console.WriteLine("Error reading {0}: {1}", qarDictionaryName, e.Message);
+            }
+
+            const string gzsDictionaryName = "gzs_dictionary.txt";
+            try
+            {
+                Hashing.ReadDictionaryLegacy(Path.Combine(executingAssemblyLocation, gzsDictionaryName));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error reading {0}: {1}", gzsDictionaryName, e.Message);
             }
 
             const string fpkDictionaryName = "fpk_dictionary.txt";
