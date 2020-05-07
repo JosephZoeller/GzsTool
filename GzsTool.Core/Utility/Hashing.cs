@@ -453,7 +453,7 @@ namespace GzsTool.Core.Utility
         {
             foreach (var line in File.ReadAllLines(path))
             {
-                ulong hash = HashFileNameLegacy(line);
+                ulong hash = HashFileNameLegacy(line, false);
                 if (HashNameDictionary.ContainsKey(hash) == false)
                 {
                     HashNameDictionary.Add(hash, line);
